@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Berita dan Toko Online</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: rgb(0, 206, 221);
+    }
+    .news-container {
+      margin-top: 20px;
+    }
+    .card {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-custom">
+    <a class="navbar-brand" href="#">FUU</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Beranda</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Tentang</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Layanan</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Kontak</a>
+        </li>
+      </ul>
+      <form class="form-inline" id="searchForm">
+        <input class="form-control mr-sm-2" type="search" id="searchInput" placeholder="Cari" aria-label="Cari">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Cari</button>
+      </form>
+    </div>
+  </nav>
+
+  <!-- Hasil Pencarian -->
+  <div class="container search-result" id="searchResult">
+    <!-- Hasil 1 -->
+    <div class="row mb-5">
+      <div class="col-md-4">
+        <img src="https://via.placeholder.com/150" alt="Gambar" class="img-fluid">
+      </div>
+      <div class="col-md-8">
+        <h3>Toko Pakaian Wanita</h3>
+        <p>Toko kami menawarkan berbagai pakaian wanita trendi, termasuk gaun, atasan, celana jeans, dan aksesoris. Kami berusaha menyediakan produk berkualitas tinggi dengan harga terjangkau. Kunjungi kami hari ini untuk mengeksplorasi koleksi terbaru kami!</p>
+        <button class="btn btn-primary beli-sekarang" data-produk="Pakaian Wanita" data-harga="100000">Beli Sekarang</button>
+      </div>
+    </div>
+
+    <!-- Hasil 2 -->
+    <div class="row mb-5">
+      <div class="col-md-4">
+        <img src="https://via.placeholder.com/150" alt="Gambar" class="img-fluid">
+      </div>
+      <div class="col-md-8">
+        <h3>Toko Pakaian Pria</h3>
+        <p>Temukan tren fashion pria terbaru di toko kami. Dari busana kasual hingga busana formal, kami memiliki semua yang Anda butuhkan untuk mengupgrade gaya Anda. Belanja sekarang dan nikmati penawaran menarik untuk pakaian berkualitas tinggi!</p>
+        <button class="btn btn-primary beli-sekarang" data-produk="Pakaian Pria" data-harga="120000">Beli Sekarang</button>
+      </div>
+    </div>
+
+    <!-- Hasil 3 -->
+    <div class="row mb-5">
+      <div class="col-md-4">
+        <img src="https://via.placeholder.com/150" alt="Gambar" class="img-fluid">
+      </div>
+      <div class="col-md-8">
+        <h3>Toko Pakaian Anak-anak</h3>
+        <p>Belanja pakaian anak yang lucu dan nyaman di toko kami. Kami menawarkan berbagai pilihan pakaian untuk bayi, balita, dan anak-anak dari segala usia. Jelajahi koleksi kami hari ini dan temukan outfit yang sempurna untuk si kecil Anda!</p>
+        <button class="btn btn-primary beli-sekarang" data-produk="Pakaian Anak-anak" data-harga="80000">Beli Sekarang</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container news-container">
+    <h1 class="text-center mb-4">Portal Berita</h1>
+    <div id="news"></div>
+  </div>
+
+  <script>
+    // Mendapatkan data dari API portal berita
+    fetch('https://newsapi.org/v2/top-headlines?country=id&apiKey=YOUR_API_KEY')
+      .then(response => response.json())
+      .then(data => {
+        const articles = data.articles;
+        const newsContainer = document.getElementById('news');
+        articles.forEach(article => {
+          const card = document.createElement('div');
+          card.classList.add('card');
+          card.innerHTML = `
+            <div class="card-body">
+              <h5 class="card-title">${article.title}</h5>
+              <p class="card-text">${article.description}</p>
+              <a href="${article.url}" target="_blank" class="btn btn-primary">Baca Selengkapnya</a>
+            </div>
+          `;
+          newsContainer.appendChild(card);
+        });
+      })
+      .catch(error => console.log(error));
+
+    // JavaScript untuk menangani pencarian
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Menghentikan pengiriman formulir
+
+      var searchKeyword = document.getElementById('searchInput').value.toLowerCase(); // Mendapatkan kata kunci pencarian
+      var searchResultElement = document.getElementById('searchResult'); // Mendapatkan elemen hasil pencarian
+
+      var textNodes = searchResultElement.querySelectorAll('p'); // Mendapatkan semua elemen teks di dalam hasil pencarian
+      var matchingNodes = [];
+
+      textNodes.forEach(function(node) {
+        var text = node.innerText.toLowerCase(); // Mengubah teks menjadi huruf kecil untuk pencocokan yang tidak case-sensitive
+        var index = text.indexOf(searchKeyword); // Mencari indeks pertama dari kata kunci pencarian dalam teks
+        if (index !== -1) { // Jika kata kunci pencarian ditemukan
+          matchingNodes.push({ node: node, index: index }); // Menyimpan node teks dan indeks dalam array
+        }
+      });
+
+      if (matchingNodes.length === 0) {
+        alert('Tidak ada hasil yang cocok ditemukan.');
+      } else if (matchingNodes.length === 1) {
+        scrollToResult(matchingNodes[0].node);
+        highlightText(matchingNodes[0].node, searchKeyword);
+      } else {
+        var choice = prompt('Ditemukan beberapa hasil yang cocok. Silakan pilih nomor:\n\n' + 
+                            matchingNodes.map(function(item, index) { return (index + 1) + '. ' + item.node.innerText.trim(); }).join('\n'));
+        if (choice) {
+          var index = parseInt(choice) - 1;
+          if (index >= 0 && index < matchingNodes.length) {
+            scrollToResult(matchingNodes[index].node);
+            highlightText(matchingNodes[index].node, searchKeyword);
+          }
+        }
+      }
+    });
+
+    // Fungsi untuk menggulir ke hasil pencarian
+    function scrollToResult(node) {
+      var rowElement = node.closest('.row');
+      if (rowElement) {
+        rowElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // Fungsi untuk menyoroti kata kunci pencarian dalam teks
+    function highlightText(node, searchKeyword) {
+      var text = node.innerText.toLowerCase();
+      var index = text.indexOf(searchKeyword);
+      var beforeText = text.substring(0, index);
+      var afterText = text.substring(index + searchKeyword.length);
+      var highlightedText = beforeText + '<span class="highlight">' + searchKeyword + '</span>' + afterText;
+      node.innerHTML = highlightedText;
+    }
+
+    // Fungsi untuk menangani klik tombol "Beli Sekarang"
+    document.querySelectorAll('.beli-sekarang').forEach(function(button) {
+      button.addEventListener('click', function() {
+        var produk = this.getAttribute('data-produk');
+        var harga = this.getAttribute('data-harga');
+        var pesan = 'Beli produk ini\n\n' +
+                    'Produk: ' + produk + '\n' +
+                    'Harga: ' + harga + '\n' +
+                    'Alamat: \n' +
+                    'Penerima: \n' +
+                    'Pembayaran: ';
+        var waLink = 'https://wa.me/6285747863723?text=' + encodeURIComponent(pesan);
+        window.open(waLink, '_blank');
+      });
+    });
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
